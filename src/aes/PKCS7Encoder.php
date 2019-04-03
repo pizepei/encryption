@@ -1,6 +1,6 @@
 <?php
 
-namespace pizepei\service\encryption\aes;
+namespace pizepei\encryption\aes;
 
 
 /**

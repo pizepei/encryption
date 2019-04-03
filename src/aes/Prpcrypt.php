@@ -6,7 +6,7 @@
  * Time: 11:23
  * @title aes 加解密
  */
-namespace pizepei\service\encryption\aes;
+namespace pizepei\encryption\aes;
 
 class Prpcrypt
 {

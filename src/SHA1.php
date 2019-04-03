@@ -1,5 +1,5 @@
 <?php
-namespace pizepei\service\encryption;
+namespace pizepei\encryption;
 /**
  * SHA1 class
  *
