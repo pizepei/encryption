@@ -1,0 +1,24 @@
+{
+    "name": "pizepei/encryption",
+    "description": "encryption",
+    "keywords": ["encryption","aes","signature"],
+    "homepage": "https://org.heil.top/",
+    "authors": [
+        {
+            "name": "pizepei",
+            "email": "pizepei@pizepei.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0.0",
+        "pizepei/config-ng": "dev-master",
+        "pizepei/func": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "pizepei\\encryption\\": "src/"
+        }
+
+    }
+
+}
