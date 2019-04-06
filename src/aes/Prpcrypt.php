@@ -20,13 +20,19 @@ class Prpcrypt
     {
         $this->key = base64_decode("{$key}=");
     }
+
     /**
-     * 对明文进行加密
+     * @Author pizepei
+     * @Created 2019/4/6 15:47
+     *
      * @param string $text 需要加密的明文
      * @param string $appid APPID
-     * @return array
+     * @param bool $urlencode
+     * @return null|string
+     * @title  对明文进行加密
+     * @explain 一般是方法功能说明、逻辑说明、注意事项等。
      */
-    public function encrypt($text, $appid)
+    public function encrypt($text, $appid,$urlencode=true)
     {
         try {
             $random = $this->getRandomStr();
@@ -34,6 +40,9 @@ class Prpcrypt
             $pkcEncoder = new PKCS7Encoder();
             $text = $pkcEncoder->encode($random . pack("N", strlen($text)) . $text . $appid);
             $encrypted = openssl_encrypt($text, 'AES-256-CBC', substr($this->key, 0, 32), OPENSSL_ZERO_PADDING, $iv);
+            if($urlencode){
+                $encrypted = urlencode($encrypted);
+            }
             return $encrypted;
         } catch (\Exception $e) {
             return null;
@@ -42,12 +51,19 @@ class Prpcrypt
 
 
     /**
-     * 对密文进行解密
+     * @Author pizepei
+     * @Created 2019/4/6 15:49
      * @param string $encrypted 需要解密的密文
-     * @return array
+     * @param bool $urldecode
+     * @return array|null
+     * @title  对密文进行解密
+     * @explain 一般是方法功能说明、逻辑说明、注意事项等。
      */
-    public function decrypt($encrypted)
+    public function decrypt($encrypted,$urldecode=true)
     {
+        if($urldecode){
+            $encrypted = urldecode($encrypted);
+        }
         try {
             $iv = substr($this->key, 0, 16);
             $decrypted = openssl_decrypt($encrypted, 'AES-256-CBC', substr($this->key, 0, 32), OPENSSL_ZERO_PADDING, $iv);
