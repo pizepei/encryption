@@ -1,5 +1,7 @@
 <?php
 namespace pizepei\encryption;
+use pizepei\helper\Helper;
+
 /**
  * SHA1 class
  *
@@ -27,6 +29,39 @@ class SHA1
             return null;
 		}
 	}
+    /**
+     * 用SHA1算法生成安全签名
+     * @param string $token 票据
+     * @param string $encrypt_msg 密文消息
+     * @return null|string
+     */
+	public function setSignature($token,$encrypt_msg)
+    {
+        $nonce = Helper::str()->int_rand(10);
+        $timestamp = time();
+        $signature = $this->getSHA1($token,$timestamp,$nonce,$encrypt_msg);
+        if (!$signature) return null;
+        return[
+            'nonce'=>$nonce,
+            'timestamp'=>$timestamp,
+            'signature'=>$signature,
+            'encrypt_msg'=>$encrypt_msg,
+        ];
+    }
+    /**
+     * 验证签名是否正确
+     * @param string $token 票据
+     * @param string $encrypt_msg 密文消息
+     * @return null|string
+     */
+    public function verifySignature($token,$data)
+    {
+        $Signature = $this->getSHA1($token,$data['timestamp'],$data['nonce'],$data['encrypt_msg']);
+        if ($Signature ===$data['signature']){
+            return true;
+        }
+        return false;
+    }
 
 }
 
