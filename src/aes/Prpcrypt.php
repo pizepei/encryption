@@ -8,8 +8,11 @@
  */
 namespace pizepei\encryption\aes;
 
+use pizepei\encryption\SHA1;
+
 class Prpcrypt
 {
+    public $SHA1;
 
     public $key;
     /**
@@ -18,6 +21,7 @@ class Prpcrypt
      */
     function __construct($key)
     {
+        $this->SHA1 = new SHA1();
         $this->key = base64_decode("{$key}=");
     }
 
@@ -84,6 +88,47 @@ class Prpcrypt
             return null;
         }
     }
+
+
+    /**
+     * 生产一个加密数据
+     * @param $text
+     * @param $appid
+     * @param $token
+     * @param bool $urlencode
+     * @return array
+     * @throws \Exception
+     */
+    public function yieldCiphertext(string  $text, string $appid, string  $token,bool $urlencode=true):array
+    {
+        # 获取密文
+        $Ciphertext = $this->encrypt($text,$appid,$urlencode);
+        if ($Ciphertext ==NULL){throw new \Exception('Encryption failed ');}
+        # 设置签名
+        $data = $this->SHA1->setSignature($token,$Ciphertext);
+        if ($data == null){ throw new \Exception('Error setting signature');}
+        $data['urlencode'] = $urlencode;
+        return $data;
+    }
+
+    /**
+     * 验证并获取解密信息
+     * @param string $token
+     * @param array $data [timestamp,nonce,encrypt_msg,urldecode]
+     * @return mixed
+     * @throws \Exception
+     */
+    public function decodeCiphertext(string $token,array $data)
+    {
+        # 验证签名
+        $res = $this->SHA1->verifySignature($token,$data);
+        if (!$res){throw new \Exception('Signature error');}
+        # 解密信息
+        $res = $this->decrypt($data['encrypt_msg'],$data['urldecode']);
+        if (!$res || !isset($res[1])){ throw new \Exception('decryption failure ');}
+        return $res[1];
+    }
+
     /**
      * 随机生成16位字符串
      * @param string $str
