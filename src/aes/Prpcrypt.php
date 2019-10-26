@@ -124,7 +124,10 @@ class Prpcrypt
         $res = $this->SHA1->verifySignature($token,$data);
         if (!$res){throw new \Exception('Signature error');}
         # 解密信息
-        $res = $this->decrypt($data['encrypt_msg'],$data['urldecode']);
+        if (!is_bool($data['urlencode'])){
+            $data['urlencode'] = $data['urlencode']==='true'?true:false;
+        }
+        $res = $this->decrypt($data['encrypt_msg'],$data['urlencode']);
         if (!$res || !isset($res[1])){ throw new \Exception('decryption failure ');}
         return $res[1];
     }
