@@ -118,15 +118,18 @@ class Prpcrypt
      * @return mixed
      * @throws \Exception
      */
-    public function decodeCiphertext(string $token,array $data)
+    public function decodeCiphertext(string $token,array $data,int $date = 600)
     {
         # 验证签名
         $res = $this->SHA1->verifySignature($token,$data);
         if (!$res){throw new \Exception('Signature error');}
+        # 验证时时性
+        if (time()- $date > $data['timestamp']){ throw new \Exception('Signature date');}
         # 解密信息
         if (!is_bool($data['urlencode'])){
             $data['urlencode'] = $data['urlencode']==='true'?true:false;
         }
+
         $res = $this->decrypt($data['encrypt_msg'],$data['urlencode']);
         if (!$res || !isset($res[1])){ throw new \Exception('decryption failure ');}
         return $res[1];
